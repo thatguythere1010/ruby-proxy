@@ -1,9 +1,36 @@
 require 'sinatra'
 require 'rest-client'
+require 'json'
 
 class Proxy < Sinatra::Base
 	get '/favicon.ico' do
-		status 204
+		if File.file?("favicon.ico")
+			status 200
+			send_file File.join("favicon.ico")
+		else
+			status 204
+		end
+	end
+
+	get '/bookmarks' do
+		bookmarks = ENV['BOOKMARKS']
+		if not bookmarks.nil?
+			begin
+				currentUrl = /(^http[s]?:\/\/[^\/]+)/.match(request.url).captures[0]
+				bookmarksBody = ""
+				bm = JSON.parse(bookmarks)
+				bm.each do |k, v|
+					bookmarksBody += "<li><a href=\"#{currentUrl}/#{v}\">#{k}</a></li>"
+				end
+
+				status 200
+				body "<ul>#{bookmarksBody}</ul>"
+			rescue
+				status 500
+			end
+		else
+			status 204
+		end
 	end
 
 	def onRequest(requestUrl, params = nil)
@@ -33,6 +60,9 @@ class Proxy < Sinatra::Base
 			    	status response.code
 			    	body 'The requested page returned this response code, or the requested page could not be found.'
 			    end
+			rescue SocketError => e
+				status 400
+				body "<h1>Invalid URL</h1>"
 		    rescue => e
 		    	status 500
 		    	body "#{e.message}<br><br>#{e.backtrace.inspect}"

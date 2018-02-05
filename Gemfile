@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
-gem 'rack', '~> 1.6', '>= 1.6.4'
+gem 'rack'
 gem 'sinatra'
 gem 'rest-client'
+gem 'json'
