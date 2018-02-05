@@ -46,11 +46,13 @@ class Proxy < Sinatra::Base
 			    	currentUrl = /(^http[s]?:\/\/[^\/]+)/.match(request.url).captures[0]
 			    	rootRequestUrl = /([^\/]+)/.match(requestUrl).captures[0]
 
-					bodyContent.gsub! /(?:http[s]?:\/\/)([^"]+)/, "#{currentUrl}/" + '\1'
-				    bodyContent.gsub! /(?<=href=")(\/[^\/][^"\s]+)/, "#{currentUrl}/#{rootRequestUrl}" + '\1'
-				    bodyContent.gsub! /(?<=src=")(\/[^\/][^"\s]+)/, "#{currentUrl}/#{rootRequestUrl}" + '\1'
-				    bodyContent.gsub! /(?<=href=")(\/{2}[^"\s]+)/, "#{currentUrl}/" + '\1'.tr('/', '')
-				    bodyContent.gsub! /(?<=src=")(\/{2}[^"\s]+)/, "#{currentUrl}/" + '\1'.tr('/', '')
+					bodyContent.gsub! /(?:http[s]?:\/\/)([^'"]+)/, "#{currentUrl}/" + '\1'
+				    bodyContent.gsub! /(?<=href=['"])([^'"\/\s]+)/, "#{currentUrl}/#{rootRequestUrl}" + '/\1'
+				    bodyContent.gsub! /(?<=src=['"])([^'"\/\s]+)/, "#{currentUrl}/#{rootRequestUrl}" + '/\1'
+				    bodyContent.gsub! /(?<=href=['"])(\/[^\/][^'"\s]+)/, "#{currentUrl}/#{rootRequestUrl}" + '\1'
+				    bodyContent.gsub! /(?<=src=['"])(\/[^\/][^'"\s]+)/, "#{currentUrl}/#{rootRequestUrl}" + '\1'
+				    bodyContent.gsub! /(?<=href=['"])(\/{2}[^'"\s]+)/, "#{currentUrl}/" + '\1'.tr('/', '')
+				    bodyContent.gsub! /(?<=src=['"])(\/{2}[^'"\s]+)/, "#{currentUrl}/" + '\1'.tr('/', '')
 
 			    	bodyContent.sub! "<head>", "<head>\n<link rel=\"shortcut icon\" href=\"#{currentUrl}/#{rootRequestUrl}/favicon.ico\" />"
 
