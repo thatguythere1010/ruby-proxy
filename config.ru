@@ -1,3 +1,3 @@
 require './proxy'
 
-run Sinatra::Application
+run Proxy
